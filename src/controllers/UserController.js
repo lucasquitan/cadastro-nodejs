@@ -4,7 +4,8 @@ class UserController {
   async store(req, res) {
     try {
       const newUser = await User.create(req.body);
-      return res.status(200).json(newUser);
+      const { id, nome, email } = newUser;
+      return res.status(200).json({ id, nome, email });
     } catch (e) {
       return res.status(400).json({
         errors: e.errors.map((err) => err.message),
@@ -14,7 +15,7 @@ class UserController {
 
   async index(req, res) {
     try {
-      const users = await User.findAll();
+      const users = await User.findAll({ attributes: ['id', 'nome', 'email'] });
 
       return res.json(users);
     } catch (e) {
@@ -32,7 +33,8 @@ class UserController {
         return res.status(400).json({ error: 'O usuário não existe.' });
       }
 
-      return res.json(user);
+      const { id, nome, email } = user;
+      return res.json({ id, nome, email });
     } catch (e) {
       return res.status(400).json({ error: 'Exception Error' });
     }
@@ -40,16 +42,16 @@ class UserController {
 
   async update(req, res) {
     try {
-      const { id } = req.params;
-      const user = await User.findByPk(id);
+      const user = await User.findByPk(req.userId);
 
       if (!user) {
-        return res.status(400).json({ error: 'O id fornecido não existe.' });
+        return res.status(400).json({ error: 'Usuário inválido.' });
       }
 
-      await user.update(req.body);
+      const newUser = await user.update(req.body);
+      const { id, nome, email } = newUser;
 
-      return res.json(req.body);
+      return res.json({ id, nome, email });
     } catch (e) {
       return res.status(400).json({
         errors: e.errors.map((err) => err.message),
@@ -59,8 +61,7 @@ class UserController {
 
   async delete(req, res) {
     try {
-      const { id } = req.params;
-
+      const id = req.userId;
       const userExist = await User.findByPk(id);
 
       if (!userExist) {
