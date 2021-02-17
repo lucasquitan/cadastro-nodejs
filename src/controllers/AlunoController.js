@@ -1,14 +1,26 @@
 import Aluno from '../models/Aluno';
+import Photo from '../models/Photo';
 
 class AlunoController {
   async index(req, res) {
-    const alunos = await Aluno.findAll();
+    try {
+      const alunos = await Aluno.findAll({
+        attributes: ['id', 'nome', 'sobrenome', 'email', 'idade'],
+        order: [['id', 'DESC'], [Photo, 'id', 'DESC']],
+        include: {
+          model: Photo,
+          attributes: ['filename'],
+        },
+      });
 
-    if (!alunos) {
-      return res.status(401).json({ error: 'Não há alunos na base de dados.' });
+      if (!alunos) {
+        return res.status(401).json({ error: 'Não há alunos na base de dados.' });
+      }
+
+      return res.json(alunos);
+    } catch (e) {
+      return res.status(400).json({ error: e.message });
     }
-
-    return res.json(alunos);
   }
 
   async store(req, res) {
@@ -30,7 +42,14 @@ class AlunoController {
         return res.status(400).json({ error: 'ID inválido.' });
       }
 
-      const aluno = await Aluno.findByPk(id);
+      const aluno = await Aluno.findByPk(id, {
+        attributes: ['id', 'nome', 'sobrenome', 'email', 'idade'],
+        order: [['id', 'DESC'], [Photo, 'id', 'DESC']],
+        include: {
+          model: Photo,
+          attributes: ['filename'],
+        },
+      });
 
       if (!aluno) {
         return res.status(400).json({ error: 'O aluno não existe.' });

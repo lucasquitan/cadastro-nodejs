@@ -5,6 +5,7 @@ import homeRoutes from './routes/home';
 import userRoutes from './routes/user';
 import sessionRoutes from './routes/session';
 import alunoRoutes from './routes/aluno';
+import photoRoutes from './routes/photo';
 
 import './database';
 
@@ -27,6 +28,7 @@ class App {
     this.app.use('/users/', userRoutes);
     this.app.use('/session/', sessionRoutes);
     this.app.use('/alunos/', alunoRoutes);
+    this.app.use('/photos/', photoRoutes);
   }
 }
 
