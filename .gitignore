@@ -1,0 +1,7 @@
+node_modules
+
+!model.env
+.env
+
+uploads/*.jpg
+uploads/*.png
